@@ -1,0 +1,25 @@
+CREATE TRIGGER student_department_delete BEFORE DELETE ON Registered
+FOR EACH ROW EXECUTE PROCEDURE student_department_delete();
+
+INSERT INTO Registered values(4999, 'Philosophy');
+SELECT * from Registered order by student_id desc limit 10;
+
+DELETE FROM Registered R 
+where R.student_id = 4999 and R.department = 'Philosophy';
+DELETE FROM Registered R 
+where R.student_id = 4999 and R.department = 'Chemical Engineering';
+
+CREATE TRIGGER student_department_insert BEFORE INSERT ON Registered
+FOR EACH ROW EXECUTE PROCEDURE student_department_insert();
+
+
+CREATE TRIGGER enroll_requirement AFTER DELETE on Enrolled 
+FOR EACH ROW EXECUTE PROCEDURE enroll_requirement();
+
+SELECT * FROM Enrolled where course_code = 249;
+SELECT * FROM TEACHING where course_code = 249;
+SELECT * FROM Course where course_code = 249;
+INSERT INTO Enrolled VALUES(250, 249);
+DELETE FROM Enrolled where course_code= 249 and student_id = 229;
+DELETE FROM Enrolled where course_code = 249 and student_id = 250;
+

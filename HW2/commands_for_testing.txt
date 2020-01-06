@@ -1,0 +1,6 @@
+\i 'D:/352_Project2/ceng352_project_2/setup_customer_database.sql'
+drop table "Watched" CASCADE; drop table "Subscription" CASCADE; drop table "Customer" CASCADE ; drop table "Plan" CASCADE;
+
+sign_up koray@ceng 123123abc koray yurtseven 1
+sign_in first@ceng 123123abc
+watched_movie tt0111161

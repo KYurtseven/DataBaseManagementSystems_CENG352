@@ -1,0 +1,267 @@
+Question 1
+Select A.primaryName 
+from Actors as A, Movies as M, Casts as C
+where 
+	M.originalTitle = "The Shawshank Redemption" and
+	A.nconst = C.nconst and
+    M.tconst = C.tconst;
+
+Question 2
+Select distinct A.primaryName, M.originalTitle, M.startYear
+From Actors as A, Movies as M, Genres as G, Casts as C
+Where 
+	A.gender = "f" and
+    M.tconst = G.tconst and
+    G.genre = "Action" and
+    A.nconst = C.nconst and
+    C.tconst = M.tconst and
+    # divisible by 4, not divisible by 100
+    # or divisible by 400
+    ((MOD(M.startYear, 4) = 0 and MOD(M.startYear, 100) != 0) or MOD(M.startYear,400) = 0);
+
+Question 3
+Select distinct 
+	A.primaryName, 
+    M.originalTitle, 
+    (A.deathYear - A.birthYear) as Ages
+From Actors as A, Movies as M, Casts as C
+Where
+	M.originalTitle like "%Star Wars%" and
+    M.tconst = C.tconst and
+    A.nconst = C.nconst and
+    A.deathYear != 0
+
+Question 4
+Select M.startYear, G.genre, count(*)
+from 
+	(Select G.genre, Count(*) as genrecount
+	from Genres as G
+	Group by G.genre
+	Having genrecount > 10000) as PopularGenres,
+    Movies as M,
+    Genres as G
+Where
+	M.tconst = G.tconst and
+    G.genre = PopularGenres.genre and
+    M.startYear is not Null
+group by
+	M.startYear, G.genre
+order by
+	M.startYear desc
+
+Question 5
+Select 
+	ActionMovies.startYear as startYear,
+    ((ActionMovies.ct / T2.ct) * 100) as percentage
+from
+	(Select M.startYear, count(*) as ct
+	From
+		Movies M,
+		Genres G
+	Where
+		G.tconst = M.tconst and
+		G.genre = "Action"
+	Group by
+		M.startYear ) as ActionMovies,
+        
+	(Select M.startYear, count(*) as ct
+    from
+		Movies M
+	Group by M.startYear) as T2 
+where 
+	ActionMovies.startYear = T2.startYear
+having
+	percentage > 10.00
+
+Question 6
+Select 
+	T1.originalTitle,
+	SUM(IF(A.gender = "m",1,0)) as Males,
+    SUM(IF(A.gender = "f",1,0)) as Females
+From Actors A
+# To have movies without cast
+RIGHT JOIN 
+	(Select 
+		distinct M.tconst,
+		M.originalTitle,
+		C.nconst
+	# To have movies without cast
+	From Movies M LEFT JOIN 
+		Casts C on M.tconst = C.tconst
+	Where M.startYear = 2015) T1 on T1.nconst = A.nconst
+Group By
+	# group by originalTitle gives less result
+	T1.tconst
+    
+    
+Question 7
+Select 
+	MovieWithAges.originalTitle,
+    MovieWithAges.primaryName,
+    MovieWithAges.CurrAge
+From
+	(Select M1.tconst, min(M1.startYear- A1.birthYear) as Age
+	From Movies M1, Actors A1, Casts C1
+    Where M1.tconst = C1.tconst and C1.nconst = A1.nconst and M1.startYear > 2015
+    group by M1.tconst
+    ) as MovieWithMinAge,
+    (Select M2.originalTitle, M2.tconst, A2.nconst, A2.primaryName, (M2.startYear - A2.birthYear) as CurrAge
+    From Movies M2, Actors A2, Casts C2
+    Where M2.tconst = C2.tconst and C2.nconst = A2.nconst and M2.startYear > 2015
+    ) as MovieWithAges
+Where MovieWithMinAge.tconst = MovieWithAges.tconst and 
+	MovieWithMinAge.Age = MovieWithAges.CurrAge
+
+Question 8
+Select A.primaryName
+
+From
+	(Select distinct C.nconst
+	from Casts C, Movies M
+	Where
+		C.tconst = M.tconst and (M.averageRating >= 8.0)) As MovieGTE8,
+	Actors A
+Where 
+	A.nconst = MovieGTE8.nconst and
+	MovieGTE8.nconst not in
+	(Select distinct C.nconst
+	from Casts C, Movies M
+	Where
+		C.tconst = M.tconst and (M.averageRating < 8 or M.averageRating is null))
+
+Question 9
+Select Actors.primaryName
+From
+	Actors,
+	(Select distinct D1.nconst
+	From Directors D1, Casts C, Movies M, Directed D2
+	Where 
+		D1.nconst = C.nconst and 
+		M.tconst = C.tconst and 
+		D2.tconst = M.tconst and 
+		D2.director = D1.nconst) as DirectorPlaysAndDirects
+
+Where
+	Actors.nconst = DirectorPlaysAndDirects.nconst and
+	DirectorPlaysAndDirects.nconst not in
+	(Select D1.nconst
+    From Directors D1, Casts C, Movies M, Directed D2
+    Where 
+		M.tconst = C.tconst and
+		D1.nconst = C.nconst and
+        D2.tconst = M.tconst and
+        D2.director != D1.nconst)
+
+Question 10
+Select 
+	A.primaryName,
+	Top10Movies.originalTitle,
+    C.characters
+From 
+	Actors A, 
+	Casts C,
+	(Select M.tconst, M.originalTitle
+	From Movies M
+	Order by M.numVotes desc
+	Limit 10) as Top10Movies
+
+Where
+	A.nconst = C.nconst and
+	C.tconst = Top10Movies.tconst
+
+Question 11
+Select CONCAT(T1.sy, '-', T1.ey) as decades, M2.originalTitle
+From Movies M2,
+	(Select y.year as sy, y.year + 9 as ey,max(M.numVotes) as numVotes
+	from
+		(Select distinct startYear as year 
+		from Movies 
+		where startYear >= 1900 and startYear <=2010) as y,
+		Movies M
+	Where M.startYear >= y.year and M.startYear < y.year + 10
+	group by y.year
+	order by sy asc) as T1
+Where M2.numVotes = T1.numVotes and
+	M2.startYear <= T1.ey and
+    M2.startYear >= T1.sy
+order by T1.sy;
+
+Question 12
+Select	
+	D1.primaryName, Count(*) as ct
+From
+	Directors D1, Directed D2, Movies M, Casts C, Actors A
+Where
+	D2.tconst = M.tconst and
+    M.tconst = C.tconst and
+    A.nconst = C.nconst and
+    D2.director = D1.nconst and
+    A.gender = "f"
+Group by D1.nconst
+Order by ct desc
+limit 101
+
+Question 13
+Select distinct D1.primaryName
+From Movies M2, Directors D1, Directed D2
+Where 
+	M2.tconst = D2.tconst and
+    D2.director = D1.nconst and 
+    M2.tconst is not null and
+	M2.tconst not in
+	(Select M1.tconst
+	From Actors A1, Movies M1, Casts C1
+	Where A1.nconst = C1.nconst and M1.tconst = C1.tconst and A1.gender = "f" )#Movies With Females
+		and exists
+        ( select *
+		from Actors a, Casts c
+		where a.nconst = c.nconst and
+			M2.tconst = c.tconst
+		)
+
+Question 14
+Select distinct D2.primaryName
+From Directors D2,  Directed Dir2, Casts C2, Movies M2, 
+	(Select A.nconst
+	From Directors D1, Actors A, Directed Dir1, Casts C1, Movies M1
+	Where 
+		D1.nconst = Dir1.director and
+		A.nconst = C1.nconst and
+		Dir1.tconst = M1.tconst and
+		C1.tconst = M1.tconst
+	Group by A.nconst
+	Having Count(distinct D1.nconst) = 1) as works
+Where
+	D2.nconst = Dir2.director and
+	M2.tconst = Dir2.tconst and
+	M2.tconst = C2.tconst and
+	works.nconst = C2.nconst
+
+Question 15
+Select distinct D5.primaryName
+From Directors D5, Directed Dir5, Casts C5
+Where D5.nconst = Dir5.director and
+	Dir5.tconst = C5.tconst and
+    D5.nconst
+Not in(
+	Select WorksWith.directorid
+	From
+		(Select D1.nconst as directorid, D1.primaryName, C.nconst as actorid
+		From Directors D1, Directed D2, Casts C
+		Where
+			D1.nconst = D2.director and
+			D2.tconst = C.tconst) as WorksWith
+	Where WorksWith.directorid in(
+							Select WorksWith2.directorid
+							From
+								(Select D1.nconst as directorid, D1.primaryName, C.nconst as actorid
+									From Directors D1, Directed D2, Casts C
+									Where
+										D1.nconst = D2.director and
+										D2.tconst = C.tconst) as WorksWith2,
+								Casts C2, Directed D3
+							Where
+								WorksWith2.directorid != D3.director and
+								WorksWith2.actorid = C2.nconst and
+								C2.tconst = D3.tconst
+						))

@@ -1,0 +1,274 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{longtable}
+
+\geometry{
+a4paper
+}
+
+\title{Ceng352 - Database Management Systems\\Written Assignment 2}
+\author{Koray Can Yurtseven, 2099547}
+\date{Spring 2019}
+
+\begin{document}
+
+\maketitle
+
+\begin{enumerate}
+
+    \item [Q1] Transactions $ T1 $, $ T2 $, $ T3 $ are to be run concurrently. The following table gives details of the proposed schedule of read/write operations and the time when each such operation is scheduled.
+    
+    \begin{center}
+        \begin{tabular}{| c |c |c |c |}
+            \hline
+            Time    &   T1          &   T2          &   T3          \\
+            \hline \hline
+            1       &               &   read(C)     &               \\ 
+            \hline
+            2       &   read(A)     &               &               \\
+            \hline
+            3       &   write(A)    &               &               \\
+            \hline
+            4       &               &   read(A)     &               \\
+            \hline
+            5       &               &               &   read(B)     \\
+            \hline
+            6       &               &               &   write(B)    \\
+            \hline
+            7       &               &   write(A)    &               \\
+            \hline
+            8       &               &   write(C)    &               \\
+            \hline
+            9       &   write(B)    &               &               \\
+            \hline
+            10      &               &               &   commit      \\
+            \hline
+            11      &               &   commit      &               \\
+            \hline
+            12      &   commit      &               &               \\ 
+            \hline
+        \end{tabular}
+    \end{center}
+    
+    When answering the following questions, indicate shared locks by $ s_i $ and exclusive locks by $ x_i $ where $ i $ is the transaction number. Also indicate the operations of transactions as $ R_i(X) $ and $ W_i(X) $ for read and write operations respectively where $ i $ is the transaction number and $ X $ is a data item.
+    
+    \begin{enumerate}
+    
+        \item Describe how the \textbf{strict two-phase locking with deadlock detection} would handle the schedule by filling in the following table.
+        
+        \begin{center}
+            \begin{longtable}{|p{2cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{6.5cm}|}
+                \hline
+                \multicolumn{1}{|c|}{\multirow{2}{*}{Operation}} & \multicolumn{3}{c}{Given LOCKS on data items} & \multicolumn{1}{|c|}{\multirow{2}{*}{Wait for graph}} \\
+                \multicolumn{1}{|c|}{} & \multicolumn{1}{c}{A} & \multicolumn{1}{c}{B} & \multicolumn{1}{c}{C} & \multicolumn{1}{|c|}{} \\ 
+                \hline
+                \multirow{2}{*}{$R_2(C)$} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{} \\
+                 &  & & & \\
+                \hline 
+                \multirow{2}{*}{$R_1(A)$} & \multirow{2}{*}{$S_1$} & \multirow{2}{*}{} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_1(A)$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline
+                \multirow{2}{*}{$R_2(A)$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{$T_2 -> T_1$, $T_2$ delays, waits for A} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$R_3(B)$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{$S_3$} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{$T_2 -> T_1$} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_3(B)$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{$X_3$} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{$T_2 -> T_1$} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_1(B)$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{$X_3$} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{$T_2 -> T_1 -> T_3$, $T_1$ delays waits for B} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$C_3$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{$T_2 -> T_1$, $T_1$ takes lock on B, continues} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$C_1$} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{$T_2$ takes lock on A, continues} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_2(A)$} & \multirow{2}{*}{$X_2$} & \multirow{2}{*}{} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_2(C)$} & \multirow{2}{*}{$X_2$} & \multirow{2}{*}{} & \multirow{2}{*}{$X_2$} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$C_2$} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline 
+            \end{longtable}
+        \end{center}
+        \item Describe how the \textbf{strict two-phase locking with wound wait deadlock prevention} would handle the schedule. Assume that $ TS(T1) = 1 $, $ TS(T2)=2 $, $ TS(T3)=3 $.
+        
+        \begin{center}
+            \begin{longtable}{|p{2cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{6.5cm}|}
+                \hline
+                \multicolumn{1}{|c|}{\multirow{2}{*}{Operation}} & \multicolumn{3}{c}{Given LOCKS on data items} & \multicolumn{1}{|c|}{\multirow{2}{*}{Wait for graph}} \\
+                \multicolumn{1}{|c|}{} & \multicolumn{1}{c}{A} & \multicolumn{1}{c}{B} & \multicolumn{1}{c}{C} & \multicolumn{1}{|c|}{} \\ 
+                \hline
+                \multirow{2}{*}{$R_2(C)$} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$R_1(A)$} & \multirow{2}{*}{$S_1$} & \multirow{2}{*}{} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_1(A)$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$R_2(A)$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{$T_2 -> T_1$, $T_2$ is newer, it will wait for A} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$R_3(B)$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{$S_3$} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{$T_2 -> T_1$} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_3(B)$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{$X_3$} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{$T_2 -> T_1$} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_1(B)$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{$X_1$} & \multirow{2}{*}{$S_2$} & \multirow{1}{*}{$T_2 -> T_1$, $T_3$ has lock on B. $T_3$ is newer} \\
+                 & & & & $T_3$ will be killed and will be restarted later \\
+                \hline 
+                \multirow{2}{*}{$C_1$} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{$T_2$ is awaken, it took lock on A} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$R_3(B)$} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{$S_3$} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{I assumed $T_3$ is restarted at this point} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_2(A)$} & \multirow{2}{*}{$X_2$} & \multirow{2}{*}{$S_3$} & \multirow{2}{*}{$S_2$} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_2(C)$} & \multirow{2}{*}{$X_2$} & \multirow{2}{*}{$S_3$} & \multirow{2}{*}{$X_2$} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_3(B)$} & \multirow{2}{*}{$X_2$} & \multirow{2}{*}{$X_3$} & \multirow{2}{*}{$X_2$} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline 
+                \multirow{2}{*}{$C_2$} & \multirow{2}{*}{} & \multirow{2}{*}{$X_3$} & \multirow{2}{*}{} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline
+                \multirow{2}{*}{$C_3$} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} \\
+                 & & & & \\
+                \hline
+            \end{longtable}
+        \end{center}
+        
+    \end{enumerate}
+    
+    \newpage
+    
+    \item [Q2] Consider the schedule $ H $ below. The symbol $ r_i(x) $ stands for a read by transaction $ Ti $ to item $ x $ and $ w_i(x) $ stands for a write by $ Ti $ to item $ x $. Suppose \textbf{timestamp-based scheduler} is used as the concurrency control protocol.
+    
+    $$ H: r_1(A) r_2(B) w_1(C) r_3(B) r_3(C) w_2(B) w_3(A) $$
+    
+    Describe what happens as each operation below executes if
+    
+    \begin{enumerate}
+        
+        \item $ TS(T1) = 1 $, $ TS(T2) = 2 $, $ TS(T3) = 3 $
+        
+        \item $ TS(T1) = 1 $, $ TS(T2) = 3 $, $ TS(T3) = 2 $
+        
+    \end{enumerate}
+    
+    Justify whether each operation is accepted or rejected, and show how the RTS and WTS timestamps of the data items are updated in each step.
+
+    Note: If an access is rejected, its parent transaction is aborted; so you can ignore (remove from the schedule) all the subsequent accesses by that transaction)
+    
+    \begin{enumerate}
+        
+        \item $ TS(T1) = 1 $, $ TS(T2) = 2 $, $ TS(T3) = 3 $
+    
+        \begin{center}
+            \begin{longtable}{|p{2cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|}
+                \hline
+                \multicolumn{1}{|c|}{\multirow{2}{*}{Operation}} & \multicolumn{2}{c|}{A} & \multicolumn{2}{c|}{B} & \multicolumn{2}{c|}{C} \\
+                \multicolumn{1}{|c|}{} & \multicolumn{1}{c}{RTS} & \multicolumn{1}{c|}{WTS} & \multicolumn{1}{c}{RTS} & \multicolumn{1}{c|}{WTS} & \multicolumn{1}{c}{RTS} & \multicolumn{1}{c|}{WTS} \\ 
+                \hline
+                \multirow{2}{*}{$R_1(A)$} & \multirow{2}{*}{1} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} \\
+                 & & & & & & \\
+                \hline 
+                \multirow{2}{*}{$R_2(B)$} & \multirow{2}{*}{1} & \multirow{2}{*}{} & \multirow{2}{*}{2} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} \\
+                 & & & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_1(C)$} & \multirow{2}{*}{1} & \multirow{2}{*}{} & \multirow{2}{*}{2} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{1} \\
+                 & & & & & & \\
+                \hline 
+                \multirow{2}{*}{$R_3(B)$} & \multirow{2}{*}{1} & \multirow{2}{*}{} & \multirow{2}{*}{3} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{1} \\
+                 & & & & & & \\
+                \hline 
+                \multirow{2}{*}{$R_3(C)$*} & \multirow{2}{*}{1} & \multirow{2}{*}{} & \multirow{2}{*}{3} & \multirow{2}{*}{} & \multirow{2}{*}{3} & \multirow{2}{*}{1} \\
+                 & & & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_2(B)$**} & \multirow{2}{*}{1} & \multirow{2}{*}{} & \multirow{2}{*}{3} & \multirow{2}{*}{} & \multirow{2}{*}{3} & \multirow{2}{*}{1} \\
+                 & & & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_3(A)$***} & \multirow{2}{*}{1} & \multirow{2}{*}{3} & \multirow{2}{*}{3} & \multirow{2}{*}{} & \multirow{2}{*}{3} & \multirow{2}{*}{1} \\
+                 & & & & & & \\
+                \hline 
+            \end{longtable}
+        \end{center}
+         $*$ Check for $WT(C) > TS(T_3)$ \\
+         The last write time of C is 1. $T_3$'s TS is 3. Meaning that, previous transaction ($T_1$) is already written to C. It is safe to read.\\
+         \\
+         $**$ Check for $RT(B) > TS(T_2)$ \\
+         The last read time of B is 3. $T_2$'s TS is 2. Meaning that, later transaction ($T_3$) read B before the $T_2$ is written to B. Too late to write. Rollback $T_2$\\
+         \\
+         $***$ Check for $RT(A) > TS(T_3)$ \\
+         The last read time of A is 1. $T_3$'s TS is 3. Safe to write. \\
+         Also check for $WT(A) > TS(T_3)$ \\
+         The last write time of A is 0. $T_3$'s TS is 3. Safe to write.\\
+        \item $ TS(T1) = 1 $, $ TS(T2) = 3 $, $ TS(T3) = 2 $
+    
+        \begin{center}
+            \begin{longtable}{|p{2cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|}
+                \hline
+                \multicolumn{1}{|c|}{\multirow{2}{*}{Operation}} & \multicolumn{2}{c|}{A} & \multicolumn{2}{c|}{B} & \multicolumn{2}{c|}{C} \\
+                \multicolumn{1}{|c|}{} & \multicolumn{1}{c}{RTS} & \multicolumn{1}{c|}{WTS} & \multicolumn{1}{c}{RTS} & \multicolumn{1}{c|}{WTS} & \multicolumn{1}{c}{RTS} & \multicolumn{1}{c|}{WTS} \\ 
+                \hline
+                \multirow{2}{*}{$R_1(A)$} & \multirow{2}{*}{1} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} \\
+                 & & & & & & \\
+                \hline 
+                \multirow{2}{*}{$R_2(B)$} & \multirow{2}{*}{1} & \multirow{2}{*}{} & \multirow{2}{*}{3} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} \\
+                 & & & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_1(C)$} & \multirow{2}{*}{1} & \multirow{2}{*}{} & \multirow{2}{*}{3} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{1} \\
+                 & & & & & & \\
+                \hline 
+                \multirow{2}{*}{$R_3(B)$} & \multirow{2}{*}{1} & \multirow{2}{*}{} & \multirow{2}{*}{3} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{1} \\
+                 & & & & & & \\
+                \hline 
+                \multirow{2}{*}{$R_3(C)$*} & \multirow{2}{*}{1} & \multirow{2}{*}{} & \multirow{2}{*}{3} & \multirow{2}{*}{} & \multirow{2}{*}{2} & \multirow{2}{*}{1} \\
+                 & & & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_2(B)$**} & \multirow{2}{*}{1} & \multirow{2}{*}{} & \multirow{2}{*}{3} & \multirow{2}{*}{3} & \multirow{2}{*}{2} & \multirow{2}{*}{1} \\
+                 & & & & & & \\
+                \hline 
+                \multirow{2}{*}{$W_3(A)$***} & \multirow{2}{*}{1} & \multirow{2}{*}{2} & \multirow{2}{*}{3} & \multirow{2}{*}{3} & \multirow{2}{*}{2} & \multirow{2}{*}{1} \\
+                 & & & & & & \\
+                \hline 
+            \end{longtable}
+        \end{center}
+        $*$ Check for $WT(C) > TS(T_3)$\\
+        The last write time of C is 1. $T_3$'s TS is 2. Meaning that, previous transaction is written to C. Safe to read. \\
+        \\
+        $**$ Check for $RT(B) > TS(T_2)$ \\
+        The last read time of B is 3. $T_2$'s TS is 3.\\
+        Also check for $WT(B) > TS(T_2)$ \\
+        The last write time of B is 0. $T_2$'s TS is 3. $T_3$ is the first one to write. Safe to write.\\
+        \\
+        $***$ Check for $RT(A) > TS(T_3)$\\
+        The last read time of A is 1. $T_3$'s TS is 2. Meaning that, the previous transaction has already read A. \\
+        Also check for $WT(A) > TS(T_3)$ \\
+        The last write time of A is 0. $T_3$'s TS is 2. $T_2$ is the first one to write. Safe to write.\\
+    
+    \end{enumerate}
+    
+\end{enumerate}
+
+\end{document}
+

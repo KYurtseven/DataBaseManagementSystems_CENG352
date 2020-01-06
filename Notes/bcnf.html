@@ -1,0 +1,642 @@
+
+<!-- saved from url=(0084)http://www.mathcs.emory.edu/~cheung/Courses/377/Syllabus/9-NormalForms/examples.html -->
+<html class="gr__mathcs_emory_edu"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><meta http-equiv="expires" content="0">
+
+</head><body text="#000000" link="#00ff00" vlink="#f00000" bgcolor="#ffffff" data-gr-c-s-loaded="true"><a name="top"></a>
+<title> CS457 Syllabus &amp; Progress </title>
+
+
+<center>
+<h1> Example in Decomposition into BCNF </h1>
+</center>
+
+
+<ul>
+<p>
+</p><li> <b>Relation:</b>
+
+<p>
+</p><ul>
+<table width="500" bgcolor="lightyellow" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   A B C D E F G H I J K L M
+
+ <font color="red">Functional dependencies:</font>
+
+      A -&gt; B C D E
+      E -&gt; F G H
+      I -&gt; J  
+      A I -&gt; K
+      A L -&gt; M
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+</p><hr>
+<hr>
+<hr>
+<p>
+</p></li><li> <b>First:</b> 
+  <font color="blue"><b> Find</b></font> 
+ <font color="red"><b><i>all</i> keys</b></font>
+<p>
+</p><ul>
+<table width="500" bgcolor="lightcyan" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>  <font color="red">Necessary</font> attributes for key: <font color="red">A I L</font>  (they are not on the RHS)
+
+  <font color="red">AIL<sup>+</sup></font> = A I L B C D E F G H J K M  <font color="red">= R !!! </font>   
+
+<hr>
+  Therefore:
+
+     key = <font color="red"><b>AIL</b></font>  (only 1 key)
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> Check <tt>R</tt> for BCNF condition:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightyellow" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   R = (A B C D E F G H I J K L M)
+   Key(R) = AIL
+
+   A -&gt; B C D E
+   E -&gt; F G H
+   I -&gt; J
+   A I -&gt; K
+   A L -&gt; M
+<font color="red">
+   A violating FD
+   ===============
+   A -&gt; B C D E        Determinant A is not a super key
+</font>
+
+   Prepare to decompose, compute:
+<font color="red">
+   A<sup>+</sup> = A B C D E F G H</font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+
+</p><p>
+</p></li><li> Decompose:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightcyan" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>  R = (A B C D E F G H I J K L M)
+  Key(R) = AIL
+<font color="red">
+        R1 = (<b>A</b> B C D E F G H)      
+        Key(R1) = A
+
+        R2 = (<b>A</b> I J K L M)           R1 &#8745; R2 -&gt; R1
+        Key(R2) = AIL </font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> Check <tt>R1</tt> for BCNF condition:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightyellow" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   R1 = (<b>A</b> B C D E F G H)
+   Key(R1) = A
+
+   A -&gt; B C D E
+   E -&gt; F G H
+   I -&gt; J
+   A I -&gt; K
+   A L -&gt; M
+<font color="red">
+   A violating FD
+   ===============
+   E -&gt; F G H        Determinant E is not a super key
+</font>
+
+   Prepare to decompose, compute:
+<font color="red">
+   E<sup>+</sup> = E F G H</font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+</p><p>
+</p></li><li> Decompose:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightcyan" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>  R = (A B C D E F G H I J K L M)
+  Key(R) = AIL
+
+        R1 = (<b>A</b> B C D E F G H)      
+        Key(R1) = A
+<font color="red">
+               R11 = (A B C D <b>E</b>)
+               Key(R11) = A
+
+               R12 = (<b>E</b> F G H)         R11 &#8745; R12 -&gt; R12   
+               Key(R12) = E</font>
+<font color="darkgreen">
+        R2 = (A I J K L M)
+        Key(R2) = AIL</font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> Check <tt>R11</tt> for BCNF condition:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightyellow" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   R11 = (A B C D E)
+   Key(R11) = A
+
+   A -&gt; B C D E
+   E -&gt; F G H
+   I -&gt; J
+   A I -&gt; K
+   A L -&gt; M
+
+<font color="blue">
+   <b>OK !</b></font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> Check <tt>R12</tt> for BCNF condition:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightcyan" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   R11 = (E F G H)
+   Key(R12) = E
+
+   A -&gt; B C D E
+   E -&gt; F G H
+   I -&gt; J
+   A I -&gt; K
+   A L -&gt; M
+
+<font color="blue">
+   <b>OK !</b></font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> Check <tt>R2</tt> for BCNF condition:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightyellow" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   R2 = (A I J K L M)
+   Key(R2) = AIL
+
+   A -&gt; B C D E
+   E -&gt; F G H
+   I -&gt; J
+   A I -&gt; K
+   A L -&gt; M
+<font color="red">
+   A violating FD
+   ===============
+   I -&gt; J            Determinant I is not a super key</font>
+
+   Prepare to decompose, compute:
+<font color="red">
+   I<sup>+</sup> = IJ</font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+
+<p>
+</p></li><li> Decompose:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightcyan" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>  R = (A B C D E F G H I J K L M)
+  Key(R) = AIL
+
+        R1 = (<b>A</b> B C D E F G H)      
+        Key(R1) = A
+<font color="darkgreen">
+               R11 = (A B C D E)
+               Key(R11) = A
+
+               R12 = (E F G H)
+               Key(R12) = E</font>
+
+        R2 = (A I J K L M)
+        Key(R2) = AIL
+<font color="red">
+               R21 = (<b>I</b> J)
+               Key(R22) = I
+
+               R22 = (A <b>I</b> K L M)       R21 &#8745; R22 -&gt; R21    
+               Key(R22) = AIL</font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> Check <tt>R21</tt> for BCNF condition:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightyellow" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   R21 = (I J)
+   Key(R21) = I
+
+   A -&gt; B C D E
+   E -&gt; F G H
+   I -&gt; J
+   A I -&gt; K
+   A L -&gt; M
+
+   <font color="BLUE"><b>OK !</b></font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> Check <tt>R22</tt> for BCNF condition:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightcyan" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   R22 = (A I K L M)
+   Key(R22) = AIL
+
+   A -&gt; B C D E
+   E -&gt; F G H
+   I -&gt; J
+   A I -&gt; K
+   A L -&gt; M
+<font color="red">
+   A violating FD
+   ===============
+   A I -&gt; K            Determinant (A,I) is not a super key</font>      
+
+   Prepare to decompose, compute:
+<font color="red">
+   (AI)<sup>+</sup> = AIK</font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+
+<p>
+</p></li><li> Decompose <tt>R22</tt>:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightyellow" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>  R = (A B C D E F G H I J K L M)
+  Key(R) = AIL
+
+        R1 = (<b>A</b> B C D E F G H)      
+        Key(R1) = A
+<font color="darkgreen">
+               R11 = (A B C D E)
+               Key(R11) = A
+
+               R12 = (E F G H)
+               Key(R12) = E</font>
+
+        R2 = (A I J K L M)
+        Key(R2) = AIL
+<font color="darkgreen">
+               R21 = (<b>I</b> J)
+               Key(R22) = I</font>
+
+               R22 = (A <b>I</b> K L M)
+               Key(R22) = AIL
+<font color="red">
+                    R221 = (<b>A I</b> K)
+                    Key(R221) = AI
+
+                    R222 = (<b>A I</b> L M)
+                    Key(R222) = AIL</font>    R221 &#8745; R222 -&gt; R221
+
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> Check <tt>R221</tt> for BCNF condition:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightcyan" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   R221 = (A I K)
+   Key(R221) = A I
+
+   A -&gt; B C D E
+   E -&gt; F G H
+   I -&gt; J
+   A I -&gt; K
+   A L -&gt; M
+
+   <font color="BLUE"><b>OK !</b></font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> Check <tt>R222</tt> for BCNF condition:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightyellow" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   R222 = (A I L M)
+   Key(R22) = AIL
+
+   A -&gt; B C D E
+   E -&gt; F G H
+   I -&gt; J
+   A I -&gt; K
+   A L -&gt; M
+<font color="red">
+   A violating FD
+   ===============
+   A L -&gt; M            Determinant (A,L) is not a super key</font>    
+
+   Prepare to decompose, compute:
+<font color="red">
+   (AL)<sup>+</sup> = ALM</font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+
+<p>
+</p></li><li> Decompose <tt>R22</tt>:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightcyan" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>  R = (A B C D E F G H I J K L M)
+  Key(R) = AIL
+
+        R1 = (<b>A</b> B C D E F G H)      
+        Key(R1) = A
+<font color="darkgreen">
+               R11 = (A B C D E)
+               Key(R11) = A
+
+               R12 = (E F G H)
+               Key(R12) = E</font>
+
+        R2 = (A I J K L M)
+        Key(R2) = AIL
+<font color="darkgreen">
+               R21 = (<b>I</b> J)
+               Key(R22) = I</font>
+
+               R22 = (A <b>I</b> K L M)
+               Key(R22) = AIL
+<font color="darkgreen">
+                    R221 = (<b>A I</b> K)
+                    Key(R221) = AI</font>
+
+                    R222 = (<b>A I</b> L M)
+                    Key(R222) = AIL
+<font color="red">
+                        R2221 = (<b>A L</b> M)
+                        Key(R2221) = AL
+
+                        R2222 = (<b>A</b> I <b>L</b>)   
+                        Key(R2222) = AIL</font>    R2221 &#8745; R2222 -&gt; R2221   
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> Check <tt>R2221</tt> for BCNF condition:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightyellow" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   R2221 = (A L M)
+   Key(R221) = A L
+
+   A -&gt; B C D E
+   E -&gt; F G H
+   I -&gt; J
+   A I -&gt; K
+   A L -&gt; M
+
+   <font color="BLUE"><b>OK !</b></font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+
+<p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> Check <tt>R2222</tt> for BCNF condition:
+<p>
+</p><ul>
+<table width="500" bgcolor="lightcyan" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   R221 = (A I L)
+   Key(R221) = A I L
+
+   A -&gt; B C D E
+   E -&gt; F G H
+   I -&gt; J
+   A I -&gt; K
+   A L -&gt; M
+
+   <font color="BLUE"><b>OK !</b></font>
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+
+<p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> <b> DONE ! </b>
+<p> Answer:
+</p><p>
+</p><ul>
+<table width="500" bgcolor="lightyellow" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>    R11 = (A B C D E)     Key(R11) = A
+    R12 = (E F G H)       Key(R12) = E
+    R21 = (I J)           Key(R22) = I
+    R221 = (A I K)        Key(R221) = AI
+    R2221 = (A L M)       Key(R2221) = AL
+    R2222 = (A I L)       Key(R2222) = AIL
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+
+<p>
+</p></li><li> Take a good look at what we have done:
+<p>
+Suppose we were told that we the DB must store the following data:
+
+</p><p>
+</p><ul>
+<table width="500" bgcolor="lightcyan" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre>   <font color="red">SSN   FName LName SupSSN     DNum         DName MgrSSN MgrStartDate </font>
+   A     B     C     D          E            F     G      H
+
+   <font color="red">Pnum  PName Hours DependName Relationship</font>
+   I     J     K     L          M
+</pre>
+And the data has the following dependencies:
+</b></font><pre><font color="blue"><b><font color="red">
+   SSN -&gt; FName LName SupSSN DNum
+   DNum -&gt; DName MgrSSN MgrStartDate
+   PNum -&gt; PName
+   SSN PNum -&gt; Hours
+   SSN DependName -&gt; Relationship
+</font>
+   A -&gt; B C D E
+   E -&gt; F G H
+   I -&gt; J
+   A I -&gt; K
+   A L -&gt; M
+</b></font>
+</pre></td> </tr>
+</tbody></table>
+</ul>
+
+<p>
+Decomposition algorithm produces the following relations:
+</p><p>
+</p><ul>
+<table width="500" bgcolor="lightyellow" border="5">
+<tbody><tr> <td>
+<font color="blue"><b>
+<pre> R11 = (SSN FName LName SupSSN DNum)    Key(R11) = SSN
+ R12 = (DNum DName MgrSSN MgrStartDate) Key(R12) = DNum
+ R21 = (PNum PName)                     Key(R22) = PNum
+ R221 = (SSN PNum Hours)                Key(R221) = SSN PNum
+ R2221 = (SSN DependName Relationship)  Key(R2221) = SSN DependName
+
+ R2222 = (SSN PNum DependName)          Key(R2222) = SSN PNum DependName 
+</pre>
+</b></font>
+</td> </tr>
+</tbody></table>
+</ul>
+<p>
+It is exactly the same as an (abreviated) company database, except for
+<tt>(SSN PNum DependName)</tt>
+
+</p><p>
+</p><hr>
+<hr>
+<p>
+</p></li><li> A relation where every attribute is part of the primary key is
+	called a "trivial" relation.
+<p>
+Trivial relations are often the "by-product" of
+decompositions.
+</p><p>
+Most trivial relations are not meaningful and can be discarded.
+(There are some meaningful trivial relations)
+</p></li></ul>
+<p>
+</p><hr>
+<hr>
+<hr>
+<hr>
+<hr>
+<hr>
+<p>
+</p></body></html>

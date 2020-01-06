@@ -1,0 +1,7 @@
+dropdb project3
+createdb project3
+psql -f import_database.sql project3
+psql -U postgres -f access_control.sql project3
+
+
+psql -U guest1 -h localhost project3

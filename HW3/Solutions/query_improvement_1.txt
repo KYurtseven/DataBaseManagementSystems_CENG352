@@ -1,0 +1,56 @@
+THIS FILE IS USED FOR COPY PASTE QUERIES TO THE TERMINAL
+FOR SEEING THE QUERY PLAN
+
+TO SEE CLUSTERING
+SELECT
+    tablename,
+    indexname,
+    indexdef
+FROM
+    pg_indexes
+WHERE
+    schemaname = 'public'
+ORDER BY
+    tablename,
+    indexname;
+
+
+
+professorCountForDepartment
+
+EXPLAIN 
+SELECT F.department, COUNT(*)
+ FROM Faculty F
+ WHERE F.department = 'Industrial Design'
+ GROUP BY F.department;
+
+
+
+studentCountForDepartment =
+EXPLAIN
+SELECT R.department, COUNT(*)
+ FROM Registered R
+ WHERE R.department = 'Industrial Design'
+ GROUP BY R.department;
+
+
+studentsForProfessor
+
+EXPLAIN 
+SELECT S.first_name, S.last_name
+ FROM Professor P, Advisor A, Student S
+ WHERE P.professor_id = A.professor_id AND A.student_id = S.student_id
+ AND P.first_name = 'ahmet' AND P.last_name = 'mehmet';
+
+professorsForStudent
+
+EXPLAIN
+SELECT P.first_name, P.last_name
+ FROM Professor P, Advisor A, Student S
+ WHERE P.professor_id = A.professor_id AND A.student_id = S.student_id 
+ and S.first_name = 'ahmet' AND S.last_name = 'mehmet';
+
+professorTitle
+EXPLAIN 
+SELECT first_name, last_name
+ FROM Professor WHERE title = 'Professor';
